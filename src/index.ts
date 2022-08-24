@@ -1,4 +1,4 @@
-import { createContext, useReducer, useMemo } from 'react'
+import { useReducer, useMemo } from 'react'
 
 export type Types<T> = keyof T | 'update'
 
@@ -20,16 +20,6 @@ function creatGetters<TState, TGetters extends { [Key in keyof Key]: TGetters[Ke
       }
     })
   }, {}) as Getters<TGetters>
-}
-
-export function createStoreContext<TState, TGetters, TActions>(initial: TState, getters: TGetters, actions: TActions) {
-  return createContext({
-    state: initial,
-    getters: creatGetters(initial, getters),
-    dispatch(type: Types<TActions>, payload: any) {
-      // Since the initial state is empty, we create a behaviorless dispatch method.
-    }
-  })
 }
 
 export function useStore<TState, TGetters, TActions>(initial: TState, getters: TGetters, actions: TActions) {
