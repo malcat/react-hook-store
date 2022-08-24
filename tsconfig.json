@@ -13,7 +13,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "outDir": "./dist",
+    "outDir": "./dist/esm",
     "rootDir": "./src",
     "skipLibCheck": true,
     "sourceMap": true,
