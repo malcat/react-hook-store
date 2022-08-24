@@ -25,7 +25,11 @@ function creatGetters<TState, TGetters>(state: TState, getters: TGetters) {
   }, {}) as Getters<TGetters>
 }
 
-export function useStore<TState, TGetters, TActions>(options: Options<TState, TGetters, TActions>) {
+export function useStore<
+  TState extends { [key: string]: any },
+  TGetters extends { [key: string]: (state: TState) => ReturnType<TGetters[typeof key]> },
+  TActions extends { [key: string]: (state: TState, payload: any) => TState }
+>(options: Options<TState, TGetters, TActions>) {
   const [state, dispatch] = useReducer((state: TState, { type, payload }: Message<TActions>) => {
     if (type === 'update') return { ...state, ...payload }
 
