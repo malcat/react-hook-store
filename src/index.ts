@@ -2,19 +2,12 @@ import { useReducer, useMemo } from 'react'
 
 type Types<T> = keyof T | 'update'
 
-type Message<T> = { type: Types<T>; payload: any }
-
-type Options<TState, TGetters, TActions> = { state: TState; getters: TGetters; actions: TActions }
-
-type Getters<T extends { [Key in keyof Key]: T[Key] }> = { [Key in keyof T]: ReturnType<T[Key]> }
-
-type Getter<T> = (state: T) => any
-
-type Action<T> = (state: T, payload: any) => T
-
-function creatGetters<TState, TGetters>(state: TState, getters: TGetters) {
+function creatGetters<TState, TGetters extends { [Key in keyof Key]: TGetters[Key] }>(
+  state: TState,
+  getters: TGetters
+) {
   return Object.entries(getters).reduce((object, kvp) => {
-    const [key, getter] = kvp as [string, Getter<TState>]
+    const [key, getter] = kvp as [string, (state: TState) => any]
 
     return Object.defineProperty(object, key, {
       enumerable: true,
@@ -22,18 +15,18 @@ function creatGetters<TState, TGetters>(state: TState, getters: TGetters) {
         return getter(state)
       }
     })
-  }, {}) as Getters<TGetters>
+  }, {}) as { [Key in keyof TGetters]: ReturnType<TGetters[Key]> }
 }
 
 export function useStore<
   TState extends { [key: string]: any },
   TGetters extends { [key: string]: (state: TState) => ReturnType<TGetters[typeof key]> },
   TActions extends { [key: string]: (state: TState, payload: any) => TState }
->(options: Options<TState, TGetters, TActions>) {
-  const [state, dispatch] = useReducer((state: TState, { type, payload }: Message<TActions>) => {
+>(options: { state: TState; getters: TGetters; actions: TActions }) {
+  const [state, dispatch] = useReducer((state: TState, { type, payload }: { type: Types<TActions>; payload: any }) => {
     if (type === 'update') return { ...state, ...payload }
 
-    const action = options.actions[type] as any as Action<TState> | undefined
+    const action = options.actions[type] as any as (state: TState, payload: any) => TState
 
     if (!action) return state
 
