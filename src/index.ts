@@ -26,7 +26,7 @@ export function useStore<
   const [state, dispatch] = useReducer((state: TState, { type, payload }: { type: Types<TActions>; payload: any }) => {
     if (type === 'update') return { ...state, ...payload }
 
-    const action = options.actions[type] as any as (state: TState, payload: any) => TState
+    const action = options.actions[type]
 
     if (!action) return state
 
