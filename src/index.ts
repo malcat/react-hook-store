@@ -1,4 +1,4 @@
-import { useReducer, useMemo } from 'react'
+import { createContext, useReducer, useMemo } from 'react'
 
 type Types<T> = keyof T | 'update'
 
@@ -16,6 +16,18 @@ function creatGetters<TState, TGetters extends { [Key in keyof Key]: TGetters[Ke
       }
     })
   }, {}) as { [Key in keyof TGetters]: ReturnType<TGetters[Key]> }
+}
+
+export function createStoreContext<
+  TState extends { [key: string]: any },
+  TGetters extends { [key: string]: (state: TState) => ReturnType<TGetters[typeof key]> },
+  TActions extends { [key: string]: (state: TState, payload: any) => TState }
+>(options: { state: TState; getters: TGetters; actions: TActions }) {
+  return createContext({
+    state: options.state,
+    getters: creatGetters(options.state, options.getters),
+    dispatch(type: Types<TActions>, payload: any) {}
+  })
 }
 
 export function useStore<
