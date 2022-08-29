@@ -53,5 +53,5 @@ export function useStore<
         dispatch({ type, payload })
       }
     }
-  }, [])
+  }, [state])
 }
